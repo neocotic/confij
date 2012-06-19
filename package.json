@@ -1,0 +1,12 @@
+{
+    "name"        : "confij"
+  , "description" : "Configuration tool that supports many sources and formats"
+  , "version"     : "1.0.0"
+  , "homepage"    : "http://neocotic.com/confij"
+  , "bugs"        : {"url": "https://github.com/neocotic/confij/issues"}
+  , "author"      : "Alasdair Mercer <mercer.alasdair@gmail.com> (http://neocotic.com)"
+  , "licenses"    : [{"type": "MIT", "url": "https://github.com/neocotic/confij/raw/master/LICENSE.md"}]
+  , "keywords"    : ["config", "configuration"]
+  , "repository"  : {"type": "git", "url": "git://github.com/neocotic/confij.git"}
+  , "main"        : "./lib/confij"
+}
