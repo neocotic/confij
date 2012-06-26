@@ -11,5 +11,7 @@
 [confij][] is a configuration tool for [node.js][] which provides a simple
 solution to all your configuration needs.
 
+[![Build Status](https://secure.travis-ci.org/neocotic/confij.png)](http://travis-ci.org/neocotic/confij)
+
 [confij]: http://neocotic.com/confij
 [node.js]: http://nodejs.org

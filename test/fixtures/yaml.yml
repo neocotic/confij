@@ -1,0 +1,78 @@
+# New line comment
+arrayIndent: # End of line comment
+  - Foo
+  - Bar
+arrayUndent: [Foo, Bar]
+arrayMultiDimensional:
+  - [Foo, Bar]
+  - [Fu, Baz]
+
+binary: !!binary |
+ R0lGODlhDAAMAIQAAP//9/X
+ 17unp5WZmZgAAAOfn515eXv
+ Pz7Y6OjuDg4J+fn5OTk6enp
+ 56enmleECcgggoBADs=
+
+blockFold: >
+  How much wood would
+  a woodchuck chuck if
+  a woodchuck could chuck
+  wood?
+blockPreserve: |
+  How much wood would
+  a woodchuck chuck if
+  a woodchuck could chuck
+  wood?
+
+booleans:
+  - true
+  - false
+
+floatCanonical: 1.23015e+3
+floatExponential: 12.3015e+02
+floatFixed: 1230.15
+
+dateCanonical: 2012-06-26T08:47:15.1Z
+dateIso8601: 2012-06-26t08:47:15.10-00:00
+dateSimple: 2012-06-26
+dateSpaced: 2012-06-26t08:47:15.10 -0
+
+infinityNegative: -.inf
+infinityPositive: .inf
+
+integerCanonical: 12345
+integerDecimal: +12345
+integerFloat: !!float 123
+integerHexadecimal: 0xC
+integerOctal: 0o14
+integerString1: !!str 12345
+integerString2: "12345"
+
+isNull1:
+isNull2: null
+isNull3: ~
+
+objectIndent: &ref1
+  prop1: Foo
+  prop2: Bar
+objectReference: *ref1
+objectSpan: {
+  prop1: Foo,
+  prop2: Bar
+}
+objectUndent: {prop1: Foo, prop2: Bar}
+
+orderedMap: !!omap
+  - prop: Foo
+  - prop: Bar
+
+notANumber: .NaN
+
+set: !!set
+  ? Foo
+  ? Bar
+
+stringDoubleQuoted: "Hello, world!\t\u263A"
+stringSimple: Hello, world!
+stringSingleQuoted: 'Hello, world!'
+stringVersion: 1.0.0

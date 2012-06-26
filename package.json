@@ -1,12 +1,46 @@
 {
-    "name"        : "confij"
-  , "description" : "Configuration tool that supports many sources and formats"
-  , "version"     : "1.0.0"
-  , "homepage"    : "http://neocotic.com/confij"
-  , "bugs"        : {"url": "https://github.com/neocotic/confij/issues"}
-  , "author"      : "Alasdair Mercer <mercer.alasdair@gmail.com> (http://neocotic.com)"
-  , "licenses"    : [{"type": "MIT", "url": "https://github.com/neocotic/confij/raw/master/LICENSE.md"}]
-  , "keywords"    : ["config", "configuration"]
-  , "repository"  : {"type": "git", "url": "git://github.com/neocotic/confij.git"}
-  , "main"        : "./lib/confij"
+    "name": "confij"
+  , "version": "1.0.0"
+  , "description": "Configuration tool that supports many sources and formats"
+  , "keywords": [
+        "config"
+      , "configuration"
+      , "ini"
+      , "json"
+      , "yaml"
+    ]
+  , "homepage": "http://neocotic.com/confij"
+  , "author": {
+        "name": "Alasdair Mercer"
+      , "email": "mercer.alasdair@gmail.com"
+      , "url": "http://neocotic.com"
+    }
+  , "licenses": [
+      {
+          "type": "MIT"
+        , "url": "https://github.com/neocotic/confij/raw/master/LICENSE.md"
+      }
+    ]
+  , "repository": {
+        "type": "git"
+      , "url": "git://github.com/neocotic/confij.git"
+    }
+  , "bugs": {
+      "url": "https://github.com/neocotic/confij/issues"
+    }
+  , "dependencies": {
+        "ini": "~1.0.2"
+      , "yamlish": "~0.0.5"
+    }
+  , "devDependencies": {
+        "coffee-script": "~1.3.3"
+      , "tap": "~0.2.5"
+    }
+  , "engines": {
+      "node": "*"
+    }
+  , "scripts": {
+      "test": "tap test/*.js"
+    }
+  , "main": "./lib/"
 }
