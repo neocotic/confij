@@ -21,8 +21,8 @@ var TEST_DATA = {
       , object3: {
           nested: {
             deep: {
-                prop1: 'Fu'
-              , prop2: 'Baz'
+                prop1: 'Foo'
+              , prop2: 'Bar'
             }
           }
         }
