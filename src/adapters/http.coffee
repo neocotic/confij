@@ -1,27 +1,43 @@
-Http  = require 'http'
-Https = require 'https'
-Url   = require 'url'
+Url = require 'url'
 
 Adapter = require '../adapter'
 
 HTTPS_OPTIONS = ['ca', 'cert', 'key', 'passphrase', 'pfx']
 
+# Options:
+#
+# agent http.Agent, false
+# ca (String|String[]) - https only
+# cert (String) - https only
+# headers (Object)
+# key (String) - https only
+# method (String)
+# passphrase (String) - https only
+# pfx (String) - https only
+# socketPath (String)
 class HttpAdapter extends Adapter
 
+  # TODO: Improve how options are used!
+  # - Derive options for request within methods so namespace options are used.
+  # TODO: Consider creating separate Adapter for HTTPS.
   constructor: (confij, target) ->
-    super confij, target
-    @confij.on 'ready', =>
-      createAgent = no
-      @target     = Url.parse @target
+    super confij, target, module
 
-      if @confij.options.http?
-        for key, value of @confij.options.http when value?
-          @target[key] = value
-          createAgent = yes if key in HTTPS_OPTIONS
+    createAgent = no
+    @target     = Url.parse @target
 
-      @controller = if @target.protocol.test /^https/i then Https else Http
-      if createAgent and not @target.agent?
-          @target.agent = new @controller.Agent @target
+    if @confij.options.http?
+      for key, value of @confij.options.http when value?
+        @target[key] = value
+        createAgent = yes if key in HTTPS_OPTIONS
+
+    @controller = if @target.protocol.test /^https/i
+      require 'https'
+    else
+      require 'http'
+
+    if createAgent and not @target.agent?
+      @target.agent = new @controller.Agent @target
 
   load: (callback) ->
     buffer = ''
@@ -30,7 +46,7 @@ class HttpAdapter extends Adapter
       res.on 'data', (chunk) ->
         buffer += chunk
       res.on 'end', =>
-        @confij.format.parse buffer.toString(), (err, data) ->
+        @confij.parse buffer.toString(), (err, data) ->
           callback err, data
 
     req.on 'error', (err) ->
@@ -39,10 +55,11 @@ class HttpAdapter extends Adapter
     req.end()
 
   save: (data, callback) ->
-    @confij.format.stringify data, (err, buffer) =>
+    @confij.stringify data, (err, buffer) =>
       return callback err if err?
       @target.method = 'POST'
       req = @controller.request @target, (res) ->
+        callback null, buffer
 
       req.on 'error', (err) ->
         callback err

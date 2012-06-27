@@ -2,6 +2,9 @@ Format = require '../format'
 
 class JsonFormat extends Format
 
+  constructor: (confij) ->
+    super confij, module
+
   parse: (str, callback) ->
     try
       callback null, JSON.parse str

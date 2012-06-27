@@ -4,6 +4,9 @@ Format = require '../format'
 
 class YamlFormat extends Format
 
+  constructor: (confij) ->
+    super confij, module
+
   parse: (str, callback) ->
     try
       callback null, Yamlish.decode str

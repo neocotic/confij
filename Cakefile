@@ -30,7 +30,7 @@ compile = (from, to) ->
 
 compileAll = (path = SOURCE_DIR) ->
   target = path.replace SOURCE_DIR, TARGET_DIR
-  unless Path.existsSync target
+  unless Fs.existsSync target
     Fs.mkdirSync target
   for file in Fs.readdirSync path
     full = Path.join path, file
@@ -50,7 +50,7 @@ findAll = (path, ext) ->
   results
 
 removeAll = (path) ->
-  if Path.existsSync path
+  if Fs.existsSync path
     for file in Fs.readdirSync path
       full = Path.join path, file
       if Fs.statSync(full).isDirectory()
@@ -68,7 +68,6 @@ task 'build', 'Build library', ->
 
 task 'test', 'Test library', ->
   exec "tap #{findAll(TEST_DIR, '.js').join ' '}", (err, stdout) ->
-    console.log arguments
     if stdout
       console.log stdout
     else if err?

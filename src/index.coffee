@@ -4,33 +4,15 @@ Format  = require './format'
 
 DEFAULT_ADAPTER = 'default'
 
-# get(source, adapterName, options)
-# get(source, adapterName)
-# get(source, options)
-# get(source)
+# Public: Creates a Confij instance for the information provided. This can then
+# be used to fetch and store configuration data.
 #
-# source: (Function|Object|String)
-#   function() {return "target"}
-#   "format": "target"
-#   "target"
+# source      - A String or Object targetting the configuration source.
+# adapterName - Optional: A String of the Adapter name.
+# options     - Optional: An object containing additional options for adapters
+#               and formats.
 #
-# adapterName: (String)
-#   default
-#   fs
-#   http
-#
-# options: (Object)
-#   fs:
-#     encoding (String)
-#   http:
-#     agent (http.Agent|Boolean)
-#     ca (String|String[]) - https only
-#     cert (String) - https only
-#     headers (Object)
-#     key (String) - https only
-#     passphrase (String) - https only
-#     pfx (String) - https only
-#     socketPath (String)
+# Returns a Confij instance.
 module.exports.get = (source, adapterName = DEFAULT_ADAPTER, options = {}) ->
   if 'object' is typeof adapterName
     options     = adapterName
@@ -39,24 +21,43 @@ module.exports.get = (source, adapterName = DEFAULT_ADAPTER, options = {}) ->
   source = resolveSource source, adapterName
 
   confij = new Confij options
-  confij.use loadAdapter adapterName, source.target, confij
+  confij.use loadAdapter adapterName, confij, source.target
   confij.use loadFormat source.type, confij
   confij
 
-loadAdapter = (adapterName, target, confij) ->
+# Private: Loads an Adapter with the specified `name`.
+#
+# name   - A String of the Adapter name.
+# confij - A Confij instance.
+# target - The target configuration or a reference to its location.
+#
+# Returns an Adapter instance.
+loadAdapter = (name, confij, target) ->
   try
-    Adapter = require "./adapters/#{adapterName?.toLowerCase()}"
+    Adapter = require "./adapters/#{name?.toLowerCase()}"
     new Adapter confij, target
   catch err
-    throw new Error "Cannot load adapter #{adapterName} - #{err}\n#{err.stack}"
+    throw new Error "Cannot load adapter #{name} - #{err}\n#{err.stack}"
 
-loadFormat = (type, confij) ->
+# Private: Loads a Format for the specified `name`.
+#
+# name   - A String of the Format name.
+# confij - A Confij instance.
+#
+# Returns a Format instance.
+loadFormat = (name, confij) ->
   try
-    Format = require "./formats/#{type?.toLowerCase()}"
+    Format = require "./formats/#{name?.toLowerCase()}"
     new Format confij
   catch err
-    throw new Error "Cannot load format #{type} - #{err}\n#{err.stack}"
+    throw new Error "Cannot load format #{name} - #{err}\n#{err.stack}"
 
+# Private: Derives the Format to be used and 
+#
+# source      - The String or Object targetting the configuration source.
+# adapterName - A String of the Adapter name.
+#
+# Returns an improved source object.
 resolveSource = (source, adapterName) ->
   newSource = {}
   if 'object' is typeof source
