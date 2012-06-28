@@ -1,5 +1,7 @@
 Path = require 'path'
 
+Utils = require './utils'
+
 class Format
 
   # A format is a specific interface to a configuration format for confij.
@@ -25,33 +27,48 @@ class Format
   #
   # Returns the value of the given `key` or namespace Object.
   option: (method, key) ->
-    root = @confij.options[@name]
-    if key?
-      if method?
-        root?[method]?[key] ? root?[key]
-      else
-        root?[key]
-    else
-      if method? then root?[method] else root
+    regex  = /sync$/i
+    result = Utils.derive @confij.options[@name], method, key
 
-  # Public: Raw method for parsing a formatted configuration string. Extend
+    if not result? and regex.test method
+      Utils.derive @confij.options[@name], method.replace(regex, ''), key
+    else
+      result
+
+  # Public: Raw method for parsing a formatted configuration String. Extend
   # this.
   #
-  # str      - A formatted configuration string.
+  # str      - A formatted configuration String.
   # callback - A Function that is called with the parsed data.
   #
   # Returns nothing.
   parse: (str, callback) ->
     callback? new Error 'Unsupported operation: parse'
 
-  # Public: Raw method for transforming configuration data into a formatted
-  # string. Extend this.
+  # Public: Synchronous version of `Format.parse`.
   #
-  # obj      - A configuration data object.
+  # str - A formatted configuration String.
+  #
+  # Returns the parsed data.
+  parseSync: (str) ->
+    throw new Error 'Unsupported operation: parseSync'
+
+  # Public: Raw method for transforming configuration data into a formatted
+  # String. Extend this.
+  #
+  # obj      - A configuration data Object.
   # callback - A Function that is called with the stringified data.
   #
   # Returns nothing.
   stringify: (obj, callback) ->
     callback? new Error 'Unsupported operation: stringify'
+
+  # Public: Synchronous version of `Format.stringify`.
+  #
+  # obj - A configuration data Object.
+  #
+  # Returns the stringified data.
+  stringifySync: (obj) ->
+    throw new Error 'Unsupported operation: stringifySync'
 
 module.exports = Format

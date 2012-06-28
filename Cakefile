@@ -1,62 +1,85 @@
-# Module dependencies
-# -------------------
-
 {exec} = require 'child_process'
 Coffee = require 'coffee-script'
 Fs     = require 'fs'
 Path   = require 'path'
 
-# Files & directories
-# -------------------
-
-SOURCE_DIR = 'src'
-TARGET_DIR = 'lib'
-TEST_DIR   = 'test'
-
-# Constants
-# ---------
-
-ENCODING = 'utf8'
-MODE     = 0o777
+ENCODING     = 'utf8'
+R_COFFEE_EXT = /\.coffee$/i
+SOURCE_DIR   = 'src'
+TARGET_DIR   = 'lib'
+TEST_DIR     = 'test'
 
 # Helpers
 # -------
 
-compile = (from, to) ->
-  ws = Fs.createWriteStream to.replace(/\.coffee$/i, '.js'),
+# Compiles the `source` CoffeeScript file in to the `target` JavaScript file.
+#
+# source - A String path pointing to the CoffeeScript file to be compiled.
+# target - A String path for the output JavaScript file.
+#
+# Returns nothing.
+compile = (source, target) ->
+  ws = Fs.createWriteStream target,
     encoding: ENCODING
-    mode:     MODE
-  ws.end Coffee.compile(Fs.readFileSync from, ENCODING), ENCODING
+    mode:     0o777
 
+  ws.write Coffee.compile Fs.readFileSync source, ENCODING
+  ws.end()
+
+# Compiles all CoffeeScript files in the directory at the given `path`.
+#
+# path - Optional: A String path for the directory.
+#
+# Returns nothing.
 compileAll = (path = SOURCE_DIR) ->
   target = path.replace SOURCE_DIR, TARGET_DIR
+
   unless Fs.existsSync target
     Fs.mkdirSync target
+
   for file in Fs.readdirSync path
     full = Path.join path, file
+
     if Fs.statSync(full).isDirectory()
       compileAll full
-    else if /\.coffee$/i.test file
-      compile full, Path.join target, file
+    else if R_COFFEE_EXT.test file
+      compile full, Path.join target, file.replace R_COFFEE_EXT, '.js'
 
+# Finds all files of the specified extension within the directory at the given
+# `path`.
+#
+# path - A String path for the directory.
+# ext  - A String extension used to query matching files.
+#
+# Returns all of the files found.
 findAll = (path, ext) ->
   results = []
+
   for file in Fs.readdirSync path
     full = Path.join path, file
+
     if Fs.statSync(full).isDirectory()
       results = results.concat findAll full
     else if ext is Path.extname file
       results.push full
+
   results
 
+# Removes the directory at the given `path` and all of its contents.
+#
+# path - A String path for the directory to be removed.
+#
+# Returns nothing.
 removeAll = (path) ->
   if Fs.existsSync path
     for file in Fs.readdirSync path
       full = Path.join path, file
+
       if Fs.statSync(full).isDirectory()
         removeAll full
       else
         Fs.unlinkSync full
+
     Fs.rmdirSync path
 
 # Tasks
@@ -64,7 +87,7 @@ removeAll = (path) ->
 
 task 'build', 'Build library', ->
   removeAll TARGET_DIR
-  do compileAll
+  compileAll()
 
 task 'test', 'Test library', ->
   exec "tap #{findAll(TEST_DIR, '.js').join ' '}", (err, stdout) ->

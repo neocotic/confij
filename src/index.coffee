@@ -1,6 +1,7 @@
 Adapter = require './adapter'
 Confij  = require './confij'
 Format  = require './format'
+Utils   = require './utils'
 
 DEFAULT_ADAPTER = 'default'
 
@@ -9,12 +10,12 @@ DEFAULT_ADAPTER = 'default'
 #
 # source      - A String or Object targetting the configuration source.
 # adapterName - Optional: A String of the Adapter name.
-# options     - Optional: An object containing additional options for adapters
+# options     - Optional: An Object containing additional options for adapters
 #               and formats.
 #
 # Returns a Confij instance.
 module.exports.get = (source, adapterName = DEFAULT_ADAPTER, options = {}) ->
-  if 'object' is typeof adapterName
+  if Utils.isObject adapterName
     options     = adapterName
     adapterName = DEFAULT_ADAPTER
 
@@ -57,20 +58,21 @@ loadFormat = (name, confij) ->
 # source      - The String or Object targetting the configuration source.
 # adapterName - A String of the Adapter name.
 #
-# Returns an improved source object.
+# Returns an improved source Object.
 resolveSource = (source, adapterName) ->
   newSource = {}
-  if 'object' is typeof source
-    for key, value of source when value?
-      newSource.target = value
-      newSource.type   = key
-      break
+
+  if Utils.isObject source
+    [newSource.type, newSource.target] = Utils.unmap source
   else
     newSource.target = source
-  if 'function' is typeof newSource.target
+
+  if Utils.isFunction newSource.target
     newSource.target = newSource.target()
+
   if not newSource.type? and adapterName in ['fs', 'http']
     newSource.type = newSource.target?.match(/\.([^\.]+)$/)?[1]
+
   newSource
 
 module.exports.Adapter = Adapter

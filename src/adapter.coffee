@@ -1,5 +1,7 @@
 Path = require 'path'
 
+Utils = require './utils'
+
 class Adapter
 
   # An adapter is a specific interface to a configuration source for confij.
@@ -19,6 +21,12 @@ class Adapter
   load: (callback) ->
     callback? new Error 'Unsupported operation: load'
 
+  # Public: Synchronous version of `Adapter.load`. Extend this.
+  #
+  # Returns the parsed data.
+  loadSync: ->
+    throw new Error 'Unsupported operation: loadSync'
+
   # Private: A helper Function for accessing relevant options within an
   # Adapter.
   #
@@ -34,22 +42,29 @@ class Adapter
   #
   # Returns the value of the given `key` or namespace Object.
   option: (method, key) ->
-    root = @confij.options[@name]
-    if key?
-      if method?
-        root?[method]?[key] ? root?[key]
-      else
-        root?[key]
+    regex  = /sync$/i
+    result = Utils.derive @confij.options[@name], method, key
+
+    if not result? and regex.test method
+      Utils.derive @confij.options[@name], method.replace(regex, ''), key
     else
-      if method? then root?[method] else root
+      result
 
   # Public: Raw method for saving a configuration. Extend this.
   #
-  # data     - A configuration data object to be persisted.
+  # data     - A configuration data Object to be persisted.
   # callback - A Function that is called with the stringified data.
   #
   # Returns nothing.
   save: (data, callback) ->
     callback? new Error 'Unsupported operation: save'
+
+  # Public: Synchronous version of `Adapter.save`. Extend this.
+  #
+  # data - A configuration data Object to be persisted.
+  #
+  # Returns the stringified data.
+  saveSync: (data) ->
+    throw new Error 'Unsupported operation: saveSync'
 
 module.exports = Adapter

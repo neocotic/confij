@@ -1,48 +1,42 @@
-Url = require 'url'
+Http = require 'http'
+Url  = require 'url'
 
 Adapter = require '../adapter'
 
-HTTPS_OPTIONS = ['ca', 'cert', 'key', 'passphrase', 'pfx']
+HTTP_OPTIONS = [
+  'agent'
+  'headers'
+  'localAddress'
+  'method'
+  'socketPath'
+]
 
-# Options:
+# This Adapter allows HTTP requests to be used in order to send and receive
+# configuration data.
 #
-# agent http.Agent, false
-# ca (String|String[]) - https only
-# cert (String) - https only
-# headers (Object)
-# key (String) - https only
-# method (String)
-# passphrase (String) - https only
-# pfx (String) - https only
-# socketPath (String)
+# `target` should be a URI pointing to an endpoint which returns formatted
+# configuration data in its response.
+#
+# Save operations will only work if supported by that endpoint.
+#
+# Only asynchronous operations are supported.
+#
+# Options:
+#   agent        - http.Agent, false
+#   headers      - Object
+#   localAddress - String
+#   method       - String
+#   socketPath   - String
 class HttpAdapter extends Adapter
 
-  # TODO: Improve how options are used!
-  # - Derive options for request within methods so namespace options are used.
-  # TODO: Consider creating separate Adapter for HTTPS.
   constructor: (confij, target) ->
     super confij, target, module
 
-    createAgent = no
-    @target     = Url.parse @target
-
-    if @confij.options.http?
-      for key, value of @confij.options.http when value?
-        @target[key] = value
-        createAgent = yes if key in HTTPS_OPTIONS
-
-    @controller = if @target.protocol.test /^https/i
-      require 'https'
-    else
-      require 'http'
-
-    if createAgent and not @target.agent?
-      @target.agent = new @controller.Agent @target
+    @target = Url.parse @target
 
   load: (callback) ->
     buffer = ''
-    @target.method = 'GET'
-    req = @controller.request @target, (res) =>
+    req = Http.request @request('load'), (res) =>
       res.on 'data', (chunk) ->
         buffer += chunk
       res.on 'end', =>
@@ -54,11 +48,28 @@ class HttpAdapter extends Adapter
 
     req.end()
 
+  # Private: Creates options for the `http.request` call using values taken
+  # from the options for this Adapter.
+  #
+  # method - A String name of a method/namespace within the options.
+  #
+  # Returns Object for request.
+  request: (method) ->
+    request = {}
+
+    for prop, value of @target
+      request[prop] = value
+
+    for option in HTTP_OPTIONS
+      value = @option method, option
+      request[option] = value if value?
+
+    request
+
   save: (data, callback) ->
     @confij.stringify data, (err, buffer) =>
       return callback err if err?
-      @target.method = 'POST'
-      req = @controller.request @target, (res) ->
+      req = Http.request @request('save'), (res) ->
         callback null, buffer
 
       req.on 'error', (err) ->
