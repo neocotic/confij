@@ -7,12 +7,6 @@ arrayMultiDimensional:
   - [Foo, Bar]
   - [Fu, Baz]
 
-binary: !!binary |
- R0lGODlhDAAMAIQAAP//9/X
- 17unp5WZmZgAAAOfn515eXv
- Pz7Y6OjuDg4J+fn5OTk6enp
- 56enmleECcgggoBADs=
-
 blockFold: >
   How much wood would
   a woodchuck chuck if
@@ -28,14 +22,14 @@ booleans:
   - true
   - false
 
-floatCanonical: 1.23015e+3
-floatExponential: 12.3015e+02
-floatFixed: 1230.15
-
 dateCanonical: 2012-06-26T08:47:15.1Z
 dateIso8601: 2012-06-26t08:47:15.10-00:00
 dateSimple: 2012-06-26
 dateSpaced: 2012-06-26t08:47:15.10 -0
+
+floatCanonical: 1.23015e+3
+floatExponential: 12.3015e+02
+floatFixed: 1230.15
 
 infinityNegative: -.inf
 infinityPositive: .inf

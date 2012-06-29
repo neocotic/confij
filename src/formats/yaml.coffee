@@ -1,8 +1,9 @@
-Yamlish = require 'yamlish'
+Yaml = require 'js-yaml'
 
 Format = require '../format'
 
-# This Format provides support for configurations using the YAML format.
+# This Format provides support for configurations using the YAML format using
+# the `js-yaml` package for parsing.
 #
 # Both synchronous and asynchronous operations are supported.
 #
@@ -15,20 +16,19 @@ class YamlFormat extends Format
 
   parse: (str, callback) ->
     try
-      callback null, Yamlish.decode str
+      callback null, Yaml.load str
     catch err
       callback err
 
   parseSync: (str) ->
-    Yamlish.decode str
+    Yaml.load str
 
+  # TODO: Provide support
   stringify: (obj, callback) ->
-    try
-      callback null, Yamlish.encode obj
-    catch err
-      callback err
+    super obj, callback
 
+  # TODO: Provide support
   stringifySync: (obj) ->
-    Yamlish.encode obj
+    super obj
 
 module.exports = YamlFormat

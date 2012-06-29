@@ -2,7 +2,8 @@ Ini = require 'ini'
 
 Format = require '../format'
 
-# This Format provides support for configurations using the INI format.
+# This Format provides support for configurations using the INI format using
+# the `ini` package for parsing and stringifying.
 #
 # Both synchronous and asynchronous operations are supported.
 #

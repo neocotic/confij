@@ -1,11 +1,12 @@
 Format = require '../format'
 
-# This Format provides support for configurations using the JSON format.
+# This Format provides support for configurations using the JSON format using
+# the built-in `JSON` namespace for parsing and stringifying.
 #
 # Both synchronous and asynchronous operations are supported.
 #
 # Options:
-#   None
+#   indent - Number
 class JsonFormat extends Format
 
   constructor: (confij) ->
@@ -22,11 +23,13 @@ class JsonFormat extends Format
 
   stringify: (obj, callback) ->
     try
-      callback null, JSON.stringify obj
+      indent = @option 'stringify', 'indent'
+      callback null, JSON.stringify obj, null, indent ? 2
     catch err
       callback err
 
   stringifySync: (obj) ->
-    JSON.stringify obj
+    indent = @option 'stringify', 'indent'
+    JSON.stringify obj, null, indent ? 2
 
 module.exports = JsonFormat

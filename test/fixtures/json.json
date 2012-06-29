@@ -1,16 +1,7 @@
 {
-  // New line comment 1
-  /* New line comment 2 */
-  /** New line comment 3 */
-  /*
-   * Block comment 1
-   */
-  /**
-   * Block comment 2
-   */
-  "arrayIndent": [ // End of line comment 1
-    "Foo", /* End of line comment 2 */
-    "Bar" /** End of line comment 3 */
+  "arrayIndent": [
+    "Foo",
+    "Bar"
   ],
   "arrayUndent": ["Foo", "Bar"],
   "arrayMultiDimensional": [

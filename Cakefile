@@ -21,7 +21,7 @@ TEST_DIR     = 'test'
 compile = (source, target) ->
   ws = Fs.createWriteStream target,
     encoding: ENCODING
-    mode:     0o777
+    mode:     0o644
 
   ws.write Coffee.compile Fs.readFileSync source, ENCODING
   ws.end()
@@ -45,22 +45,21 @@ compileAll = (path = SOURCE_DIR) ->
     else if R_COFFEE_EXT.test file
       compile full, Path.join target, file.replace R_COFFEE_EXT, '.js'
 
-# Finds all files of the specified extension within the directory at the given
-# `path`.
+# Finds all matching files within the directory at the given `path`.
 #
-# path - A String path for the directory.
-# ext  - A String extension used to query matching files.
+# path    - A String path for the directory.
+# matcher - A Function used to filter the file results.
 #
-# Returns all of the files found.
-findAll = (path, ext) ->
+# Returns all matching files.
+findAll = (path, matcher) ->
   results = []
 
   for file in Fs.readdirSync path
     full = Path.join path, file
 
     if Fs.statSync(full).isDirectory()
-      results = results.concat findAll full
-    else if ext is Path.extname file
+      results = results.concat findAll full, matcher
+    else if matcher full
       results.push full
 
   results
@@ -90,7 +89,10 @@ task 'build', 'Build library', ->
   compileAll()
 
 task 'test', 'Test library', ->
-  exec "tap #{findAll(TEST_DIR, '.js').join ' '}", (err, stdout) ->
+  tests = findAll TEST_DIR, (path) ->
+    /\.js$/i.test path
+
+  exec "tap #{tests.join ' '}", (err, stdout) ->
     if stdout
       console.log stdout
     else if err?

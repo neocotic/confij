@@ -26,12 +26,13 @@ class Confij extends EventEmitter
   # Returns this instance of Confij.
   load: (callback) ->
     @adapter.load (err, @data) =>
-      callback? err, @data
-
-      if err?
-        @emit 'error', err
+      if Utils.isFunction callback
+        callback err, @data
       else
-        @emit 'loaded', @data
+        if err?
+          @emit 'error', err
+        else
+          @emit 'loaded', @data
 
     @
 
@@ -43,7 +44,6 @@ class Confij extends EventEmitter
       @data = @adapter.loadSync()
     catch err
       @emit 'error', err
-      throw err
 
     @emit 'loaded', @data
 
@@ -58,12 +58,13 @@ class Confij extends EventEmitter
   # Returns this instance of Confij.
   parse: (str, callback) ->
     @format.parse str, (err, obj) =>
-      callback? err, obj
-
-      if err?
-        @emit 'error', err
+      if Utils.isFunction callback
+        callback err, obj
       else
-        @emit 'parsed', obj
+        if err?
+          @emit 'error', err
+        else
+          @emit 'parsed', obj
 
     @
 
@@ -77,7 +78,6 @@ class Confij extends EventEmitter
       obj = @format.parseSync str
     catch err
       @emit 'error', err
-      throw err
 
     @emit 'parsed', obj
 
@@ -98,12 +98,13 @@ class Confij extends EventEmitter
     @data = data if data?
 
     @adapter.save @data, (err, buffer) =>
-      callback? err, buffer
-
-      if err?
-        @emit 'error', err
+      if Utils.isFunction callback
+        callback err, buffer
       else
-        @emit 'saved', buffer
+        if err?
+          @emit 'error', err
+        else
+          @emit 'saved', buffer
 
     @
 
@@ -119,7 +120,6 @@ class Confij extends EventEmitter
       buffer = @adapter.saveSync @data
     catch err
       @emit 'error', err
-      throw err
 
     @emit 'saved', buffer
 
@@ -134,12 +134,13 @@ class Confij extends EventEmitter
   # Returns this instance of Confij.
   stringify: (obj, callback) ->
     @format.stringify obj, (err, str) =>
-      callback? err, str
-
-      if err?
-        @emit 'error', err
+      if Utils.isFunction callback
+        callback err, str
       else
-        @emit 'stringified', str
+        if err?
+          @emit 'error', err
+        else
+          @emit 'stringified', str
 
     @
 
@@ -153,7 +154,6 @@ class Confij extends EventEmitter
       str = @format.stringifySync obj
     catch err
       @emit 'error', err
-      throw err
 
     @emit 'stringified', str
 

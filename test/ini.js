@@ -48,7 +48,8 @@ string = 12345
 prop1 = Foo
 prop2 = Bar
 
-    */}.toString().replace(/\r/g, '').split(/\n/).slice(2, -1).join('\n')
+
+    */}.toString().replace(/\r/g, '').split(/\n/).slice(2, -2).join('\n')
   , TEST_FILE = Path.join(__dirname, 'fixtures', 'ini.ini');
 
 test('load from file', function(t) {
@@ -61,7 +62,7 @@ test('load from file', function(t) {
 });
 
 test('save to string', function(t) {
-  index.get({ini: TEST_DATA}).save(TEST_DATA, function(err, buffer) {
+  index.get({ini: ''}).save(TEST_DATA, function(err, buffer) {
     t.notOk(err, 'should not have an error');
     t.type(buffer, 'string', 'buffer should be a string');
     t.equal(buffer, TEST_BUFFER, 'buffers should be equal');
